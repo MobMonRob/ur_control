@@ -1,12 +1,11 @@
 #include "robot_command/ServerNode.h"
 
-//std::unique_ptr<GpioManager> ServerNode::gpio = nullptr;
-
 ServerNode::ServerNode(int argc, char **argv)
 {
 	ros::init(argc, argv, "robot_command Server");
 	node = std::make_unique<ros::NodeHandle>();
-	//gpio = std::make_unique<GpioManager>();
+	bool roboter_ipSet = node->getParam("roboter_ip", roboter_ip);
+	bool program_nameSet = node->getParam("program_name", program_name);
 }
 
 void ServerNode::start()
@@ -23,5 +22,4 @@ bool ServerNode::robotCommand(robot_command::robotCommandRequest& request, robot
 	
 	return true;
 }
-
 

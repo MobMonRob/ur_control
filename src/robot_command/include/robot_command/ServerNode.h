@@ -4,6 +4,7 @@
 #include "robot_command/robotCommand.h" ///home/oliver/robot_command_ws/devel/include/robotCommand
 
 #include <memory>
+#include <string>
 
 #include "ros/ros.h"
 
@@ -15,7 +16,9 @@ class ServerNode
 	
 	private:
 	std::unique_ptr<ros::NodeHandle> node;
-	//static std::unique_ptr<GpioManager> gpio;
+	std::string roboter_ip;
+	std::string program_name;
+
 	static bool robotCommand(robot_command::robotCommandRequest& request, robot_command::robotCommandResponse& response);
 };
 
