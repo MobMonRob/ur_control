@@ -1,0 +1,9 @@
+{
+	"ros.distro": "melodic",
+	"python.autoComplete.extraPaths": [
+		"/home/oliver/robotCommand_ws/devel/lib/python2.7/dist-packages",
+		"/home/oliver/realsense_ws/devel/lib/python2.7/dist-packages",
+		"/home/oliver/rospylon/devel/lib/python2.7/dist-packages",
+		"/opt/ros/melodic/lib/python2.7/dist-packages"
+	]
+}

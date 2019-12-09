@@ -1,0 +1,5 @@
+<launch>
+  <node name="robot_command Server" pkg="robot_command" type="Server" output="screen" />
+</launch>
+
+
