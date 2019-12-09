@@ -6,6 +6,11 @@ ServerNode::ServerNode(int argc, char **argv)
 	node = std::make_unique<ros::NodeHandle>();
 	bool roboter_ipSet = node->getParam("roboter_ip", roboter_ip);
 	bool program_nameSet = node->getParam("program_name", program_name);
+
+	if (roboter_ipSet || program_nameSet) {
+		ROS_ERROR("Please set roboter_ipSet and program_nameSet in the .launch file");
+		ros::shutdown();
+	}
 }
 
 void ServerNode::start()
