@@ -160,10 +160,23 @@ add_dependencies(Server ${catkin_EXPORTED_TARGETS})
 add_dependencies(Client ${catkin_EXPORTED_TARGETS})
 #####benötigt, damit Service Files zuvor generiert werden
 
+add_library(socketLib STATIC
+	socketLib/Protocol.cpp
+	socketLib/ProtocolSimple.cpp
+	socketLib/Socket.cpp
+
+	socketLib/Protocol.h
+	socketLib/ProtocolSimple.h
+	socketLib/Protocol.h
+	socketLib/Socket.h
+	socketLib/Socket.tpp
+	socketLib/Utility.h
+)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(Server
   ${catkin_LIBRARIES}
+  socketLib
 	#"${PIGPIO}"
 )
 

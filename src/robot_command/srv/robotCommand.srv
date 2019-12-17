@@ -6,5 +6,5 @@ int32 STOP=3
 int32 PAUSE=4
 ---
 Header header
-bool success
+string response
 

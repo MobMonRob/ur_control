@@ -9,17 +9,16 @@
 
 class ClientNode
 {
-	public:
+public:
 	ClientNode(int argc, char **argv);
-	void robotCommand(robot_command::robotCommandRequest::_command_type& command);
+	void robotCommand(robot_command::robotCommandRequest &commandReq);
 
 	//Folgende Abstraktionen gehören in eine weitere Klasse
 	void test();
-	
-	private:
+
+private:
 	std::unique_ptr<ros::NodeHandle> node;
 	std::unique_ptr<ros::ServiceClient> client;
 };
 
 #endif
-

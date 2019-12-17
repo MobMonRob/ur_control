@@ -8,6 +8,10 @@
 
 #include "ros/ros.h"
 
+#include "../socketLib/Socket.h"
+#include "../socketLib/ProtocolSimple.h"
+namespace Socket = ThorsAnvil::Socket;
+
 class ServerNode
 {
 	public:
@@ -17,8 +21,10 @@ class ServerNode
 	private:
 	std::unique_ptr<ros::NodeHandle> node;
 	std::string roboter_ip;
-	std::string program_name;
+	int roboter_port;
+	static std::string program_name;
 
+	static std::unique_ptr<Socket::ProtocolSimple> protocolSimple;
 	static bool robotCommand(robot_command::robotCommandRequest& request, robot_command::robotCommandResponse& response);
 };
 
