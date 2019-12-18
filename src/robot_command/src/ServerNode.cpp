@@ -24,7 +24,7 @@ ServerNode::ServerNode(int argc, char **argv)
 
 void ServerNode::start()
 {
-	ros::ServiceServer server = node->advertiseService("robot_command", robotCommand);
+	ros::ServiceServer server = node->advertiseService("ur5e_cmd", robotCommand);
 	ROS_INFO("robot_command service activated");
 
 	ros::spin();

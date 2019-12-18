@@ -6,7 +6,7 @@ ClientNode::ClientNode(int argc, char **argv)
 {
 	ros::init(argc, argv, "robot_command_client");
 	node = std::make_unique<ros::NodeHandle>();
-	client = std::unique_ptr<ros::ServiceClient>(new ros::ServiceClient(node->serviceClient<robot_command::robotCommand>("robot_command"))); //Stack->Heap per copy-constructor
+	client = std::unique_ptr<ros::ServiceClient>(new ros::ServiceClient(node->serviceClient<robot_command::robotCommand>("ur5e_cmd"))); //Stack->Heap per copy-constructor
 }
 
 void ClientNode::robotCommand(robot_command::robotCommandRequest &commandReq)
