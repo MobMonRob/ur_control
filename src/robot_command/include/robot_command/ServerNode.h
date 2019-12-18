@@ -14,19 +14,17 @@ namespace Socket = ThorsAnvil::Socket;
 
 class ServerNode
 {
-	public:
+public:
 	ServerNode(int argc, char **argv);
 	void start();
-	
-	private:
+
+private:
 	std::unique_ptr<ros::NodeHandle> node;
-	std::string roboter_ip;
-	int roboter_port;
+	static std::string roboter_ip;
+	static int roboter_port;
 	static std::string program_name;
 
-	static std::unique_ptr<Socket::ProtocolSimple> protocolSimple;
-	static bool robotCommand(robot_command::robotCommandRequest& request, robot_command::robotCommandResponse& response);
+	static bool robotCommand(robot_command::robotCommandRequest &request, robot_command::robotCommandResponse &response);
 };
 
 #endif
-
