@@ -1,7 +1,7 @@
 #ifndef CLIENT_NODE
 #define CLIENT_NODE
 
-#include "robot_control/robotCommand.h" ///home/oliver/robot_command_ws/devel/include/robot_control
+#include "robot_control/robotCommand.h"
 
 #include <memory>
 
@@ -22,3 +22,4 @@ private:
 };
 
 #endif
+

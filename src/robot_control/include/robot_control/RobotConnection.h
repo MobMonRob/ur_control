@@ -9,7 +9,7 @@ class RobotConnection
 public:
 	RobotConnection(const std::string& ip, int port);
 	void send(const std::string& message);
-	void receive(std::string& message);
+	std::string receive();
 
 private:
 	boost::asio::io_service io_service;

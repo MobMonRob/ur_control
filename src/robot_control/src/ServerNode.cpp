@@ -25,18 +25,17 @@ ServerNode::ServerNode(int argc, char **argv)
 void ServerNode::start()
 {
 	ros::ServiceServer server = node->advertiseService("robotCommand", robotCommand);
-	ROS_INFO("robotCommand service activated...");
+	ROS_INFO("robotCommand service activated.");
 
 	robotConnection = std::make_unique<RobotConnection>(roboter_ip, roboter_port);
-	ROS_INFO("Connected to %s:%i", roboter_ip.c_str(), roboter_port);
+	ROS_INFO("Connection established.");
+	ROS_INFO("Robot response:\n%s", robotConnection->receive().c_str());
 
 	ros::spin();
 }
 
 bool ServerNode::robotCommand(robot_control::robotCommandRequest &request, robot_control::robotCommandResponse &response)
 {
-	ROS_INFO("Request received.");
-
 	std::string commandName;
 
 	switch (request.command){
@@ -58,18 +57,14 @@ bool ServerNode::robotCommand(robot_control::robotCommandRequest &request, robot
             return true;
 	}
 
-	ROS_INFO("command: %s", commandName.c_str());
+	ROS_INFO("Received command:\n%s", commandName.c_str());
 
 	commandName.append("\n"); //Anforderung vom UR Dashboard Server
 
 	robotConnection->send(commandName);
 
-	std::string robot_response;
-	robotConnection->receive(robot_response);
-
-	ROS_INFO("response:\n%s", robot_response.c_str());
-
-	response.response = robot_response;
+	response.response = robotConnection->receive();
+	ROS_INFO("Robot response:\n%s", response.response.c_str());
 
 	return true;
 }

@@ -1,8 +1,7 @@
 #ifndef SERVER_NODE
 #define SERVER_NODE
 
-#include "robot_control/robotCommand.h" ///home/oliver/robot_command_ws/devel/include/robot_control/
-
+#include "robot_control/robotCommand.h"
 #include "robot_control/RobotConnection.h"
 
 #include <memory>
@@ -27,3 +26,4 @@ private:
 };
 
 #endif
+

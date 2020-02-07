@@ -32,7 +32,7 @@ void ClientNode::robotCommand(robot_control::robotCommandRequest &commandReq)
 		return;
 	}
 
-	ROS_INFO("Command: %s", commandName.c_str());
+	ROS_INFO("Sent command:\n%s", commandName.c_str());
 
 	robot_control::robotCommand robotCommand;
 	robotCommand.request = commandReq;
@@ -41,7 +41,7 @@ void ClientNode::robotCommand(robot_control::robotCommandRequest &commandReq)
 
 	if (success)
 	{
-		ROS_INFO("%s", robotCommand.response.response.c_str());
+		ROS_INFO("Robot response:\n%s", robotCommand.response.response.c_str());
 	}
 	else
 	{
@@ -73,3 +73,4 @@ void ClientNode::test()
 		robotCommand(request);
 	}
 }
+

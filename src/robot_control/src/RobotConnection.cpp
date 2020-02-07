@@ -24,7 +24,7 @@ void RobotConnection::send(const std::string& message)
      }
 }
 
-void RobotConnection::receive(std::string& message)
+std::string RobotConnection::receive()
 {
 	system::error_code error;
 	asio::streambuf receive_buffer;
@@ -36,7 +36,7 @@ void RobotConnection::receive(std::string& message)
         throw error.message();
     }
     else {
-        message.assign(asio::buffer_cast<const char*>(receive_buffer.data()), receive_buffer.size());
+        return std::string(asio::buffer_cast<const char*>(receive_buffer.data()), receive_buffer.size());
     }
 }
 
