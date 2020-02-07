@@ -1,4 +1,4 @@
-#include "robot_command/ClientNode.h"
+#include "robot_control/ClientNode.h"
 
 #include <string>
 
@@ -6,10 +6,10 @@ ClientNode::ClientNode(int argc, char **argv)
 {
 	ros::init(argc, argv, "robot_command_client");
 	node = std::make_unique<ros::NodeHandle>();
-	client = std::unique_ptr<ros::ServiceClient>(new ros::ServiceClient(node->serviceClient<robot_command::robotCommand>("ur5e_cmd"))); //Stack->Heap per copy-constructor
+	client = std::unique_ptr<ros::ServiceClient>(new ros::ServiceClient(node->serviceClient<robot_control::robotCommand>("robotCommand"))); //Stack->Heap per copy-constructor
 }
 
-void ClientNode::robotCommand(robot_command::robotCommandRequest &commandReq)
+void ClientNode::robotCommand(robot_control::robotCommandRequest &commandReq)
 {
 	std::string commandName;
 
@@ -34,7 +34,7 @@ void ClientNode::robotCommand(robot_command::robotCommandRequest &commandReq)
 
 	ROS_INFO("Command: %s", commandName.c_str());
 
-	robot_command::robotCommand robotCommand;
+	robot_control::robotCommand robotCommand;
 	robotCommand.request = commandReq;
 
 	bool success = client->call(robotCommand);
@@ -53,7 +53,7 @@ void ClientNode::test()
 {
 	ros::Rate loop_rate(0.25);
 
-	robot_command::robotCommandRequest request;
+	robot_control::robotCommandRequest request;
 
 	while (ros::ok())
 	{

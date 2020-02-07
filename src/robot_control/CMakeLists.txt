@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robot_command)
+project(robot_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++14)
@@ -58,6 +58,8 @@ find_package(catkin REQUIRED COMPONENTS
  add_service_files(
    FILES
    robotCommand.srv
+   nextcycle.srv
+   robotCalibration.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -104,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES robot_command
+  LIBRARIES robot_control
   CATKIN_DEPENDS roscpp std_msgs message_runtime
 #  DEPENDS system_lib
 )

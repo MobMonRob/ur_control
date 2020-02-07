@@ -3,7 +3,7 @@
 #Starten mit:
 # ./_server.bash
 
-cd /home/oliver/./src/robot_command
+cd /home/oliver/robot_command_ws
 source devel/setup.bash
-roslaunch robot_command Server.launch
+roslaunch robot_control Server.launch
 

@@ -1,8 +1,0 @@
-<launch>
-  <node name="robot_command_server" pkg="robot_command" type="Server" output="screen">
-    <param name="roboter_ip" value="192.168.12.11" type="str" />
-    <param name="roboter_port" value="29999" type="int" />
-    <param name="program_name" value="program.urp" type="str" />
-  </node>
-</launch>
-

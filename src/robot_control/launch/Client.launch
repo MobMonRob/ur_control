@@ -1,0 +1,4 @@
+<launch>
+  <node name="robot_command_client" pkg="robot_control" type="Client" output="screen" />
+</launch>
+
