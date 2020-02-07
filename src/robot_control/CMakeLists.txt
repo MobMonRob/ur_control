@@ -14,7 +14,11 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost REQUIRED COMPONENTS system)
+include_directories(${Boost_INCLUDE_DIRS}) 
 
 #find_library(PIGPIO pigpio)
 
@@ -137,7 +141,8 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(Server
     src/ServerNodeMain.cpp
-    src/ServerNode.cpp
+	src/ServerNode.cpp
+	src/RobotConnection.cpp
 )
 
 add_executable(Client
@@ -162,24 +167,10 @@ add_dependencies(Server ${catkin_EXPORTED_TARGETS})
 add_dependencies(Client ${catkin_EXPORTED_TARGETS})
 #####benötigt, damit Service Files zuvor generiert werden
 
-add_library(socketLib STATIC
-	socketLib/Protocol.cpp
-	socketLib/ProtocolSimple.cpp
-	socketLib/Socket.cpp
-
-	socketLib/Protocol.h
-	socketLib/ProtocolSimple.h
-	socketLib/Protocol.h
-	socketLib/Socket.h
-	socketLib/Socket.tpp
-	socketLib/Utility.h
-)
-
 ## Specify libraries to link a library or executable target against
 target_link_libraries(Server
   ${catkin_LIBRARIES}
-  socketLib
-	#"${PIGPIO}"
+  ${Boost_LIBRARIES}
 )
 
 target_link_libraries(Client

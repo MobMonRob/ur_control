@@ -66,6 +66,12 @@
 		"cinttypes": "cpp",
 		"typeindex": "cpp",
 		"typeinfo": "cpp",
-		"*.tpp": "cpp"
+		"*.tpp": "cpp",
+		"csignal": "cpp",
+		"codecvt": "cpp",
+		"condition_variable": "cpp",
+		"future": "cpp",
+		"mutex": "cpp",
+		"*.ipp": "cpp"
 	}
 }

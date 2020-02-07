@@ -3,14 +3,12 @@
 
 #include "robot_control/robotCommand.h" ///home/oliver/robot_command_ws/devel/include/robot_control/
 
+#include "robot_control/RobotConnection.h"
+
 #include <memory>
 #include <string>
 
 #include "ros/ros.h"
-
-#include "../socketLib/Socket.h"
-#include "../socketLib/ProtocolSimple.h"
-namespace Socket = ThorsAnvil::Socket;
 
 class ServerNode
 {
@@ -23,8 +21,7 @@ private:
 	std::string roboter_ip;
 	int roboter_port;
 	static std::string program_name;
-	static std::unique_ptr<Socket::ConnectSocket> connectSocket;
-	static std::unique_ptr<Socket::ProtocolSimple> protocolSimple;
+	static std::unique_ptr<RobotConnection> robotConnection;
 
 	static bool robotCommand(robot_control::robotCommandRequest &request, robot_control::robotCommandResponse &response);
 };

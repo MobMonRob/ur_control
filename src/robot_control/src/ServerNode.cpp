@@ -2,9 +2,7 @@
 
 std::string ServerNode::program_name = "";
 
-std::unique_ptr<Socket::ConnectSocket> ServerNode::connectSocket = nullptr;
-
-std::unique_ptr<Socket::ProtocolSimple> ServerNode::protocolSimple = nullptr;
+std::unique_ptr<RobotConnection> ServerNode::robotConnection = nullptr;
 
 ServerNode::ServerNode(int argc, char **argv)
 {
@@ -29,17 +27,8 @@ void ServerNode::start()
 	ros::ServiceServer server = node->advertiseService("robotCommand", robotCommand);
 	ROS_INFO("robotCommand service activated...");
 
-////
-	ROS_INFO("Connect to %s:%i", roboter_ip.c_str(), roboter_port);
-
-	//Socket::ConnectSocket connectSocket(roboter_ip, roboter_port);
-
-	connectSocket = std::make_unique<Socket::ConnectSocket>(roboter_ip, roboter_port);
-
-	//Socket::ProtocolSimple protocolSimple(connectSocket);
-
-	protocolSimple = std::make_unique<Socket::ProtocolSimple>(*connectSocket);
-////
+	robotConnection = std::make_unique<RobotConnection>(roboter_ip, roboter_port);
+	ROS_INFO("Connected to %s:%i", roboter_ip.c_str(), roboter_port);
 
 	ros::spin();
 }
@@ -47,12 +36,6 @@ void ServerNode::start()
 bool ServerNode::robotCommand(robot_control::robotCommandRequest &request, robot_control::robotCommandResponse &response)
 {
 	ROS_INFO("Request received.");
-    
-    //ROS_INFO("Try to connect ip=%s:%i", roboter_ip.c_str(), roboter_port);
-
-	//Socket::ConnectSocket connectSocket(roboter_ip, roboter_port);
-    
-	//Socket::ProtocolSimple protocolSimple(connectSocket);
 
 	std::string commandName;
 
@@ -79,11 +62,10 @@ bool ServerNode::robotCommand(robot_control::robotCommandRequest &request, robot
 
 	commandName.append("\n"); //Anforderung vom UR Dashboard Server
 
-	connectSocket->putMessageData(commandName.c_str(), commandName.size());
-	//connectSocket->putMessageClose();
+	robotConnection->send(commandName);
 
 	std::string robot_response;
-	protocolSimple->recvMessage(robot_response);
+	robotConnection->receive(robot_response);
 
 	ROS_INFO("response:\n%s", robot_response.c_str());
 
@@ -91,3 +73,4 @@ bool ServerNode::robotCommand(robot_control::robotCommandRequest &request, robot
 
 	return true;
 }
+
