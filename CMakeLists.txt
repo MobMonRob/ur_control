@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robot_control)
+project(UR_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++14)
@@ -62,8 +62,9 @@ include_directories(${Boost_INCLUDE_DIRS})
  add_service_files(
    FILES
    robotCommand.srv
-   nextcycle.srv
-   robotCalibration.srv
+   #nextcycle.srv
+   #robotCalibration.srv
+   #add.srv
 )
 
 ## Generate actions in the 'action' folder

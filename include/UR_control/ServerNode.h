@@ -1,8 +1,8 @@
 #ifndef SERVER_NODE
 #define SERVER_NODE
 
-#include "robot_control/robotCommand.h"
-#include "robot_control/RobotConnection.h"
+#include "UR_control/robotCommand.h"
+#include "UR_control/RobotConnection.h"
 
 #include <memory>
 #include <string>
@@ -22,7 +22,7 @@ private:
 	static std::string program_name;
 	static std::unique_ptr<RobotConnection> robotConnection;
 
-	static bool robotCommand(robot_control::robotCommandRequest &request, robot_control::robotCommandResponse &response);
+	static bool robotCommand(UR_control::robotCommandRequest &request, UR_control::robotCommandResponse &response);
 };
 
 #endif

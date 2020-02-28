@@ -1,9 +1,11 @@
 Header header
 int32 command
+string program
 int32 LOAD=1
 int32 PLAY=2
 int32 STOP=3
 int32 PAUSE=4
+int32 RUNNING=5
 ---
 Header header
 string response

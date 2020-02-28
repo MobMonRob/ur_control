@@ -1,4 +1,5 @@
-#include "robot_control/ServerNode.h"
+#include "UR_control/ServerNode.h"
+#include "ros/console.h"
 
 std::string ServerNode::program_name = "";
 
@@ -8,6 +9,8 @@ ServerNode::ServerNode(int argc, char **argv)
 {
 	ros::init(argc, argv, "robot_command_server");
 	node = std::make_unique<ros::NodeHandle>();
+    if( ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug) )
+    ros::console::notifyLoggerLevelsChanged();
 
 	ros::NodeHandle nh_priv("~");
 	bool roboter_ipSet = nh_priv.getParam("roboter_ip", roboter_ip);
@@ -34,13 +37,13 @@ void ServerNode::start()
 	ros::spin();
 }
 
-bool ServerNode::robotCommand(robot_control::robotCommandRequest &request, robot_control::robotCommandResponse &response)
+bool ServerNode::robotCommand(UR_control::robotCommandRequest &request, UR_control::robotCommandResponse &response)
 {
 	std::string commandName;
 
 	switch (request.command){
         case request.LOAD:
-            commandName = std::string("load ").append(program_name);
+            commandName = std::string("load ").append(request.program);
             break;
         case request.PLAY:
             commandName = std::string("play");
@@ -50,6 +53,10 @@ bool ServerNode::robotCommand(robot_control::robotCommandRequest &request, robot
             break;
         case request.PAUSE:
             commandName = std::string("pause");
+            break;
+        case request.RUNNING:
+            commandName = std::string("running");
+            
             break;
         default:
             ROS_ERROR("Incorrect command");

@@ -1,4 +1,4 @@
-#include "robot_control/ClientNode.h"
+#include "UR_control/ClientNode.h"
 
 #include <string>
 
@@ -6,10 +6,10 @@ ClientNode::ClientNode(int argc, char **argv)
 {
 	ros::init(argc, argv, "robot_command_client");
 	node = std::make_unique<ros::NodeHandle>();
-	client = std::unique_ptr<ros::ServiceClient>(new ros::ServiceClient(node->serviceClient<robot_control::robotCommand>("robotCommand"))); //Stack->Heap per copy-constructor
+	client = std::unique_ptr<ros::ServiceClient>(new ros::ServiceClient(node->serviceClient<UR_control::robotCommand>("robotCommand"))); //Stack->Heap per copy-constructor
 }
 
-void ClientNode::robotCommand(robot_control::robotCommandRequest &commandReq)
+void ClientNode::robotCommand(UR_control::robotCommandRequest &commandReq)
 {
 	std::string commandName;
 
@@ -27,6 +27,9 @@ void ClientNode::robotCommand(robot_control::robotCommandRequest &commandReq)
 	case commandReq.PAUSE:
 		commandName = "PAUSE";
 		break;
+    case commandReq.RUNNING:
+		commandName = "RUNNING";
+		break;
 	default:
 		ROS_ERROR("Incorrect command");
 		return;
@@ -34,7 +37,7 @@ void ClientNode::robotCommand(robot_control::robotCommandRequest &commandReq)
 
 	ROS_INFO("Sent command:\n%s", commandName.c_str());
 
-	robot_control::robotCommand robotCommand;
+	UR_control::robotCommand robotCommand;
 	robotCommand.request = commandReq;
 
 	bool success = client->call(robotCommand);
@@ -53,7 +56,7 @@ void ClientNode::test()
 {
 	ros::Rate loop_rate(0.25);
 
-	robot_control::robotCommandRequest request;
+	UR_control::robotCommandRequest request;
 
 	while (ros::ok())
 	{
@@ -70,6 +73,12 @@ void ClientNode::test()
 		loop_rate.sleep();
 
 		request.command = request.STOP;
+		robotCommand(request);
+        
+        ros::spinOnce();
+		loop_rate.sleep();
+
+		request.command = request.RUNNING;
 		robotCommand(request);
 	}
 }

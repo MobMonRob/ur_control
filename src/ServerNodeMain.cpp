@@ -1,4 +1,4 @@
-#include "robot_control/ServerNode.h"
+#include "UR_control/ServerNode.h"
 
 int main(int argc, char **argv)
 {

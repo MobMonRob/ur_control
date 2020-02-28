@@ -1,7 +1,7 @@
 #ifndef CLIENT_NODE
 #define CLIENT_NODE
 
-#include "robot_control/robotCommand.h"
+#include "UR_control/robotCommand.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@ class ClientNode
 {
 public:
 	ClientNode(int argc, char **argv);
-	void robotCommand(robot_control::robotCommandRequest &commandReq);
+	void robotCommand(UR_control::robotCommandRequest &commandReq);
 
 	//Folgende Abstraktionen gehören in eine weitere Klasse
 	void test();
