@@ -1,6 +1,7 @@
 #include "UR_control/ServerNode.h"
 #include "ros/console.h"
 #include <optional>
+#include <functional>
 
 //std::string ServerNode::program_name = "";
 
@@ -40,48 +41,60 @@ void ServerNode::start()
 
 bool ServerNode::robotCommand(UR_control::robotCommandRequest &request, UR_control::robotCommandResponse &response)
 {
-	std::optional<std::string> decodedCommand(decodeCommand(request));
+	std::string command;
+	std::function<std::string(const std::string& command)> handleCommandRequest;
+	handleCommandRequest = &sendCommandToRobot;
 
-	if( !decodedCommand.has_value() ) {
-		ROS_ERROR("Incorrect command");
-		response.response = "Incorrect command";
-	} else {
-		response.response = sendCommandToRobot(decodedCommand.value());
+	switch (request.command){
+        case request.LOAD:
+            command = std::string("load ").append(request.program); //kann leer sein ->Standardwert wird momentan nicht gesetzt in diesem Fall
+            break;
+		case request.PLAY:
+			command = std::string("play");
+			handleCommandRequest = &requestCommandPLAY;
+			break;
+        case request.STOP:
+            command = std::string("stop");
+            break;
+        case request.PAUSE:
+            command = std::string("pause");
+            break;
+        case request.RUNNING:
+            command = std::string("running");
+            break;
+        default:
+			response.response = "Incorrect command";
+			ROS_ERROR("%s", response.response.c_str());
+			return true;
 	}
+
+	ROS_INFO("Received command:\n%s", command.c_str());
+	response.response = handleCommandRequest(command);
 
 	return true;
 }
 
-std::optional<std::string> ServerNode::decodeCommand(UR_control::robotCommandRequest& request)
+std::string ServerNode::requestCommandPLAY(const std::string& command)
 {
-	std::string commandName;
+	std::string isRunningString = sendCommandToRobot("running");
+	std::string response;
 
-	switch (request.command){
-        case request.LOAD:
-            commandName = std::string("load ").append(request.program);
-            break;
-        case request.PLAY:
-            commandName = std::string("play");
-            break;
-        case request.STOP:
-            commandName = std::string("stop");
-            break;
-        case request.PAUSE:
-            commandName = std::string("pause");
-            break;
-        case request.RUNNING:
-            commandName = std::string("running");
-            break;
-        default:
-			return std::nullopt;
+	if( isRunningString.find("true") != std::string::npos ) { //weiteres Mal
+		//XMLRPC Server benachrichtigen
+
+
+		response = "Robot is already running. Notified XMLRPC Server.";
+	} else if ( isRunningString.find("false") != std::string::npos ) { // erstes Mal
+		response = sendCommandToRobot("play");
+	} else { //Fehler
+		response = "Robot message not interpretable: " + isRunningString;
+		ROS_ERROR("%s", response.c_str());
 	}
 
-	ROS_INFO("Received command:\n%s", commandName.c_str());
-
-	return make_optional(commandName);
+	return response;
 }
 
-std::string ServerNode::sendCommandToRobot(std::string& command)
+std::string ServerNode::sendCommandToRobot(const std::string& command)
 {
 	std::string alteredCommand(command);
 	alteredCommand.append("\n"); //Anforderung vom UR Dashboard Server

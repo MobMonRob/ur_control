@@ -23,8 +23,8 @@ private:
 	static std::unique_ptr<RobotConnection> robotConnection;
 
 	static bool robotCommand(UR_control::robotCommandRequest &request, UR_control::robotCommandResponse &response);
-	static std::optional<std::string> decodeCommand(UR_control::robotCommandRequest& request);
-	static std::string sendCommandToRobot(std::string& command);
+	static std::string requestCommandPLAY(const std::string& command);
+	static std::string sendCommandToRobot(const std::string& command);
 };
 
 #endif
