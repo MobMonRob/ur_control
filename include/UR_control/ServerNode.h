@@ -19,10 +19,12 @@ private:
 	std::unique_ptr<ros::NodeHandle> node;
 	std::string roboter_ip;
 	int roboter_port;
-	static std::string program_name;
+	//static std::string program_name;
 	static std::unique_ptr<RobotConnection> robotConnection;
 
 	static bool robotCommand(UR_control::robotCommandRequest &request, UR_control::robotCommandResponse &response);
+	static std::optional<std::string> decodeCommand(UR_control::robotCommandRequest& request);
+	static std::string sendCommandToRobot(std::string& command);
 };
 
 #endif

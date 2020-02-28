@@ -19,6 +19,8 @@ public:
 private:
 	std::unique_ptr<ros::NodeHandle> node;
 	std::unique_ptr<ros::ServiceClient> client;
+
+	void testOneCommand(UR_control::robotCommandRequest::_command_type command);
 };
 
 #endif

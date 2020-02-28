@@ -54,32 +54,27 @@ void ClientNode::robotCommand(UR_control::robotCommandRequest &commandReq)
 
 void ClientNode::test()
 {
-	ros::Rate loop_rate(0.25);
-
 	UR_control::robotCommandRequest request;
 
 	while (ros::ok())
 	{
-		request.command = request.LOAD;
-		robotCommand(request);
-
-		ros::spinOnce();
-		loop_rate.sleep();
-
-		request.command = request.PLAY;
-		robotCommand(request);
-
-		ros::spinOnce();
-		loop_rate.sleep();
-
-		request.command = request.STOP;
-		robotCommand(request);
-        
-        ros::spinOnce();
-		loop_rate.sleep();
-
-		request.command = request.RUNNING;
-		robotCommand(request);
+		testOneCommand(request.LOAD);
+		testOneCommand(request.PLAY);
+		testOneCommand(request.STOP);
+		testOneCommand(request.RUNNING);
 	}
+}
+
+void ClientNode::testOneCommand(UR_control::robotCommandRequest::_command_type command)
+{
+		static ros::Rate loop_rate(0.25);
+
+		UR_control::robotCommandRequest request;
+		
+		request.command = command;
+		robotCommand(request);
+
+		ros::spinOnce();
+		loop_rate.sleep();
 }
 
