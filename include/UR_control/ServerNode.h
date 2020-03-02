@@ -1,5 +1,5 @@
-#ifndef SERVER_NODE
-#define SERVER_NODE
+#ifndef SERVER_NODE_H
+#define SERVER_NODE_H
 
 #include "UR_control/robotCommand.h"
 #include "UR_control/RobotConnection.h"
@@ -24,7 +24,6 @@ private:
 
 	static bool robotCommand(UR_control::robotCommandRequest &request, UR_control::robotCommandResponse &response);
 	static std::string requestCommandPLAY(const std::string& command);
-	static std::string sendCommandToRobot(const std::string& command);
 };
 
 #endif

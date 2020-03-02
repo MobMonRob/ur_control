@@ -143,6 +143,7 @@ include_directories(
 add_executable(Server
     src/ServerNodeMain.cpp
 	src/ServerNode.cpp
+	src/SocketConnection.cpp
 	src/RobotConnection.cpp
 )
 

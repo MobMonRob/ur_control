@@ -1,5 +1,5 @@
-#ifndef CLIENT_NODE
-#define CLIENT_NODE
+#ifndef CLIENT_NODE_H
+#define CLIENT_NODE_H
 
 #include "UR_control/robotCommand.h"
 

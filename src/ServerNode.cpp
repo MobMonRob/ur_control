@@ -1,6 +1,5 @@
 #include "UR_control/ServerNode.h"
 #include "ros/console.h"
-#include <optional>
 #include <functional>
 
 //std::string ServerNode::program_name = "";
@@ -32,9 +31,10 @@ void ServerNode::start()
 	ros::ServiceServer server = node->advertiseService("robotCommand", robotCommand);
 	ROS_INFO("robotCommand service activated.");
 
-	robotConnection = std::make_unique<RobotConnection>(roboter_ip, roboter_port);
+	std::unique_ptr<SocketConnection> socketConnection = std::make_unique<SocketConnection>(roboter_ip, roboter_port);
 	ROS_INFO("Connection established.");
-	ROS_INFO("Robot response:\n%s", robotConnection->receive().c_str());
+	ROS_INFO("Robot response:\n%s", socketConnection->receive().c_str());
+	robotConnection = std::make_unique<RobotConnection>(socketConnection);
 
 	ros::spin();
 }
@@ -42,8 +42,8 @@ void ServerNode::start()
 bool ServerNode::robotCommand(UR_control::robotCommandRequest &request, UR_control::robotCommandResponse &response)
 {
 	std::string command;
-	std::function<std::string(const std::string& command)> handleCommandRequest;
-	handleCommandRequest = &sendCommandToRobot;
+	static const std::function<std::string(const std::string& command)> handleCommandRequestStandard([](const std::string& command)->std::string{return robotConnection->sendCommandToRobot(command);});
+	std::function<std::string(const std::string& command)> handleCommandRequest(handleCommandRequestStandard);
 
 	switch (request.command){
         case request.LOAD:
@@ -76,7 +76,7 @@ bool ServerNode::robotCommand(UR_control::robotCommandRequest &request, UR_contr
 
 std::string ServerNode::requestCommandPLAY(const std::string& command)
 {
-	std::string isRunningString = sendCommandToRobot("running");
+	std::string isRunningString = robotConnection->sendCommandToRobot("running");
 	std::string response;
 
 	if( isRunningString.find("true") != std::string::npos ) { //weiteres Mal
@@ -85,24 +85,11 @@ std::string ServerNode::requestCommandPLAY(const std::string& command)
 
 		response = "Robot is already running. Notified XMLRPC Server.";
 	} else if ( isRunningString.find("false") != std::string::npos ) { // erstes Mal
-		response = sendCommandToRobot("play");
+		response = robotConnection->sendCommandToRobot("play");
 	} else { //Fehler
 		response = "Robot message not interpretable: " + isRunningString;
 		ROS_ERROR("%s", response.c_str());
 	}
-
-	return response;
-}
-
-std::string ServerNode::sendCommandToRobot(const std::string& command)
-{
-	std::string alteredCommand(command);
-	alteredCommand.append("\n"); //Anforderung vom UR Dashboard Server
-	
-	robotConnection->send(alteredCommand);
-
-	std::string response = robotConnection->receive();
-	ROS_INFO("Robot response:\n%s", response.c_str());
 
 	return response;
 }

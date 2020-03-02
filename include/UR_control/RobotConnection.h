@@ -1,20 +1,17 @@
-#ifndef ROBOT_CONNECTION
-#define ROBOT_CONNECTION
+#ifndef ROBOT_CONNECTION_H
+#define ROBOT_CONNECTION_H
 
-#include <string>
-#include <boost/asio.hpp>
+#include "UR_control/SocketConnection.h"
+#include <memory>
 
 class RobotConnection
 {
 public:
-	RobotConnection(const std::string& ip, int port);
-	void send(const std::string& message);
-	std::string receive();
+	RobotConnection(std::unique_ptr<SocketConnection>& socketConnection);
+	std::string sendCommandToRobot(const std::string& command);
 
 private:
-	boost::asio::io_service io_service;
-	boost::asio::ip::tcp::socket socket;
-
+	std::unique_ptr<SocketConnection> socketConnection;
 };
 
 #endif
