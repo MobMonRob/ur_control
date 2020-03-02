@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ros/ros.h"
+#include <XmlRpcClient.h>
 
 class ServerNode
 {
@@ -19,10 +20,14 @@ private:
 	std::unique_ptr<ros::NodeHandle> node;
 	std::string roboter_ip;
 	int roboter_port;
-	//static std::string program_name;
+	std::string xmlrpc_ip;
+	int xmlrpc_port;
+	static std::string program_name;
 	static std::unique_ptr<RobotConnection> robotConnection;
+	static std::unique_ptr<XmlRpc::XmlRpcClient> xmlRpcClient;
 
 	static bool robotCommand(UR_control::robotCommandRequest &request, UR_control::robotCommandResponse &response);
+	static std::string requestCommandLOAD(const std::string& command);
 	static std::string requestCommandPLAY(const std::string& command);
 };
 

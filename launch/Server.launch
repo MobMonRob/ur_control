@@ -3,6 +3,8 @@
     <param name="roboter_ip" value="192.168.12.10" type="str" />
     <param name="roboter_port" value="29999" type="int" />
     <param name="program_name" value="experiment_20200226.urp" type="str" />
+	<param name="xmlrpc_ip" value="192.168.12.199" type="str" />
+	<param name="xmlrpc_port" value="8000" type="int" />
   </node>
 </launch>
 

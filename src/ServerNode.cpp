@@ -2,9 +2,10 @@
 #include "ros/console.h"
 #include <functional>
 
-//std::string ServerNode::program_name = "";
+std::string ServerNode::program_name = "";
 
 std::unique_ptr<RobotConnection> ServerNode::robotConnection = nullptr;
+std::unique_ptr<XmlRpc::XmlRpcClient> ServerNode::xmlRpcClient = nullptr;
 
 ServerNode::ServerNode(int argc, char **argv)
 {
@@ -16,11 +17,13 @@ ServerNode::ServerNode(int argc, char **argv)
 	ros::NodeHandle nh_priv("~");
 	bool roboter_ipSet = nh_priv.getParam("roboter_ip", roboter_ip);
 	bool roboter_portSet = nh_priv.getParam("roboter_port", roboter_port);
-	//bool program_nameSet = nh_priv.getParam("program_name", program_name);
+	nh_priv.getParam("program_name", program_name);
+	bool xmlrpc_ipSet = nh_priv.getParam("xmlrpc_ip", xmlrpc_ip);
+	bool xmlrpc_portSet = nh_priv.getParam("xmlrpc_port", xmlrpc_port);
 
-	if (!roboter_ipSet || !roboter_portSet) // || !program_nameSet)
+	if (!roboter_ipSet || !roboter_portSet || !xmlrpc_ipSet || !xmlrpc_portSet)
 	{
-		ROS_ERROR("Please set roboter_ipSet, roboter_portSet and program_nameSet in the .launch file");
+		ROS_ERROR("Error: Please configure .launch file properly.");
 		ROS_INFO("%s", roboter_ip.c_str());
 		ros::shutdown();
 	}
@@ -28,13 +31,18 @@ ServerNode::ServerNode(int argc, char **argv)
 
 void ServerNode::start()
 {
-	ros::ServiceServer server = node->advertiseService("robotCommand", robotCommand);
-	ROS_INFO("robotCommand service activated.");
-
 	std::unique_ptr<SocketConnection> socketConnection = std::make_unique<SocketConnection>(roboter_ip, roboter_port);
 	ROS_INFO("Connection established.");
 	ROS_INFO("Robot response:\n%s", socketConnection->receive().c_str());
+
 	robotConnection = std::make_unique<RobotConnection>(socketConnection);
+
+	xmlRpcClient = std::make_unique<XmlRpc::XmlRpcClient>(xmlrpc_ip.c_str(), xmlrpc_port);
+
+
+	//Muss hier logisch am Ende sein.
+	ros::ServiceServer server = node->advertiseService("robotCommand", robotCommand);
+	ROS_INFO("robotCommand service activated.");
 
 	ros::spin();
 }
@@ -47,7 +55,8 @@ bool ServerNode::robotCommand(UR_control::robotCommandRequest &request, UR_contr
 
 	switch (request.command){
         case request.LOAD:
-            command = std::string("load ").append(request.program); //kann leer sein ->Standardwert wird momentan nicht gesetzt in diesem Fall
+            command = std::string("load ").append(request.program);
+			handleCommandRequest = &requestCommandLOAD;
             break;
 		case request.PLAY:
 			command = std::string("play");
@@ -63,7 +72,7 @@ bool ServerNode::robotCommand(UR_control::robotCommandRequest &request, UR_contr
             command = std::string("running");
             break;
         default:
-			response.response = "Incorrect command";
+			response.response = "Error: Incorrect command";
 			ROS_ERROR("%s", response.response.c_str());
 			return true;
 	}
@@ -74,23 +83,60 @@ bool ServerNode::robotCommand(UR_control::robotCommandRequest &request, UR_contr
 	return true;
 }
 
-std::string ServerNode::requestCommandPLAY(const std::string& command)
+std::string ServerNode::requestCommandLOAD(const std::string& command)
 {
-	std::string isRunningString = robotConnection->sendCommandToRobot("running");
 	std::string response;
 
-	if( isRunningString.find("true") != std::string::npos ) { //weiteres Mal
-		//XMLRPC Server benachrichtigen
+	//gleich, d.h. request.program ist leer.
+	if ( command.compare("load ") == 0 ) {
+		if ( program_name.empty() ) {
+			response = "Error: program name not provided.";
+			ROS_ERROR("%s", response.c_str());
+			return response;
+		}
 
-
-		response = "Robot is already running. Notified XMLRPC Server.";
-	} else if ( isRunningString.find("false") != std::string::npos ) { // erstes Mal
-		response = robotConnection->sendCommandToRobot("play");
-	} else { //Fehler
-		response = "Robot message not interpretable: " + isRunningString;
-		ROS_ERROR("%s", response.c_str());
+		std::string alteredCommand = command + program_name;
+		response = robotConnection->sendCommandToRobot(alteredCommand);
+		return response;
 	}
 
+	response = robotConnection->sendCommandToRobot(command);
+	return response;
+}
+
+std::string ServerNode::requestCommandPLAY(const std::string& command)
+{
+	std::string response;
+	std::string isRunningString = robotConnection->sendCommandToRobot("running");
+
+	//weiteres Mal
+	if( isRunningString.find("true") != std::string::npos ) {
+		//XMLRPC Server benachrichtigen
+		XmlRpc::XmlRpcValue pause_false(false); ////#pose.pause = True bedeutet PAUSE; False bedeutet PLAY
+		XmlRpc::XmlRpcValue setPauseReturn;
+		xmlRpcClient->execute("setPause", pause_false, setPauseReturn);
+
+		response = "Robot is already running.";
+
+		if ( xmlRpcClient->isFault() ) {
+			response += "\nError: XMLRPC execution faulted.";
+			ROS_ERROR("%s", response.c_str());
+		} else {
+			response += "\nNotified XMLRPC Server.";
+		}
+
+		return response;
+	}
+
+	// erstes Mal
+	if ( isRunningString.find("false") != std::string::npos ) {
+		response = robotConnection->sendCommandToRobot("play");
+		return response;
+	}
+	
+	//Fehler
+	response = "Error: Robot message not interpretable: " + isRunningString;
+	ROS_ERROR("%s", response.c_str());
 	return response;
 }
 

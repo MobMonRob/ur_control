@@ -59,9 +59,10 @@ void ClientNode::test()
 	while (ros::ok())
 	{
 		testOneCommand(request.LOAD);
-		//testOneCommand(request.PLAY);
-		//testOneCommand(request.STOP);
+		testOneCommand(request.PLAY);
 		testOneCommand(request.RUNNING);
+		testOneCommand(request.PLAY);
+		testOneCommand(request.STOP);
 	}
 }
 
