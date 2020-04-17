@@ -1,0 +1,10 @@
+<launch>
+  <node name="robot_command_server" pkg="UR_control" type="Server" output="screen">
+    <param name="roboter_ip" value="192.168.12.1" type="str" />
+    <param name="roboter_port" value="29999" type="int" />
+    <param name="program_name" value="experiment_20200226.urp" type="str" />
+	<param name="xmlrpc_ip" value="192.168.12.199" type="str" />
+	<param name="xmlrpc_port" value="8000" type="int" />
+  </node>
+</launch>
+
